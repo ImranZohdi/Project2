@@ -74,11 +74,5 @@ def Draw():
     circle(30,steps=5)
     end_fill()
 
-    up()
-    home()
-    fd(80)
-    seth(90)
-    down()
-    circle(80)
 
 Draw()
