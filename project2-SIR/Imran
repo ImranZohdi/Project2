@@ -1,0 +1,1055 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyMyWQBvkMQ3456yokz+fT8e",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/ImranZohdi/Project2/blob/main/project2-SIR/Imran\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Project 2 - S I R model\n",
+        "\n",
+        "Author: Imran Zohdi\n",
+        "COMP215-Spring 2024"
+      ],
+      "metadata": {
+        "id": "rREqEP2UNAtX"
+      }
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 2,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 1000
+        },
+        "id": "NO67upvUMqyx",
+        "outputId": "74677ac7-c325-436d-d894-ac8c6420c142"
+      },
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 1 Axes>"
+            ],
+            "image/png": "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WIXgAgBYheACAFiF4AIAWIXgAgBYheACAFiF4AIAWCVm9+MCAERXNL9fMJrfexgNvna/rpl4ebWccQEArEJwAQCsQnABAKxCcAEArEJwAQCsQnABAKxCcAEArEJwAQCsQnABAKxCcAEArEJwAQCsQnABAKxCcAEArEJwAQCsQnABAKxCcAEArEJwAQCswh2QAWAQitbdlPvjTsqccQEArEJwAQCsQnABAKxCcAEArEJwAQCsEvXgWr9+vRwOR9AyefLkXse88cYbmjx5shITEzV16lTt2LEj2m0BAAaImJxxTZkyRS0tLYFl7969YWv37dungoICLVu2TIcPH1Z+fr7y8/N19OjRWLQGALBcTIIrISFBqampgWXkyJFha3/5y19q/vz5+t73vqebbrpJGzZs0G233aaNGzfGojUAgOViElzHjx+X2+3WhAkTtHjxYjU1NYWtra6uVnZ2dtC2nJwcVVdXhx3T1dUln88XtAAABoeoB1dmZqbKyspUUVGhTZs2qaGhQXfccYfa29tD1ns8HqWkpARtS0lJkcfjCfsziouL5XK5Akt6enpUHwMAIH5FPbhyc3N13333adq0acrJydGOHTvU1tam119/PWo/Y82aNfJ6vYHlxIkTUTs2ACC+xfy7CkeMGKGJEyeqrq4u5P7U1FS1trYGbWttbVVqamrYYzqdTjmdzqj2CQCwQ8x/j6ujo0P19fVKS0sLuT8rK0uVlZVB23bu3KmsrKxYtwYAsFDUg+uxxx7T7t279eGHH2rfvn1auHChhg4dqoKCAknSkiVLtGbNmkD9I488ooqKCv3iF7/QP//5T61fv14HDx7UqlWrot0aAGAAiPpbhc3NzSooKNCZM2c0atQozZ49W/v379eoUaMkSU1NTRoy5D95OWvWLL3yyit64okn9IMf/EA33nijysvLdcstt0S7NQDAAOAwxpj+buJK+Xw+uVwuzVGeEhzD+rsdABg0onU/Ll+7X9dM/EBer1fJycm91vJdhQAAqxBcAACrxPxyeABA/InWW3w57ulROc550y3pg8uq5YwLAGAVggsAYBWCCwBgFYILAGAVggsAYBWCCwBgFYILAGAVggsAYBWCCwBgFYILAGAVggsAYBWCCwBgFYILAGAVggsAYBWCCwBgFYILAGAVggsAYBXugAwAg1C07lwcrTsp+9r9umbi5dVyxgUAsArBBQCwCsEFALAKwQUAsArBBQCwCsEFALAKwQUAsArBBQCwCsEFALAKwQUAsArBBQCwCsEFALAKwQUAsArBBQCwStSDa9y4cXI4HBctK1euDFlfVlZ2UW1iYmK02wIADBBRvx/XX//6V/X09ATWjx49qq985Su67777wo5JTk7WsWPHAusOhyPabQEABoioB9eoUaOC1n/yk5/ohhtu0J133hl2jMPhUGpqarRbAQAMQDH9jOvcuXN6+eWX9dBDD/V6FtXR0aGxY8cqPT1deXl5ev/992PZFgDAYlE/4/pv5eXlamtr09KlS8PWTJo0SaWlpZo2bZq8Xq9+/vOfa9asWXr//fc1ZsyYkGO6urrU1dUVWPf5fNFuHQBwGXLc06NynPOmW9IHl1XrMMaYqPzUEHJycjR8+HD94Q9/uOwx3d3duummm1RQUKANGzaErFm/fr2eeuqpi7bPUZ4SHMM+db8AgP5x3nSrStvl9XqVnJzca23M3ipsbGzUrl279PDDD0c0btiwYbr11ltVV1cXtmbNmjXyer2B5cSJE1faLgDAEjELri1btmj06NG6++67IxrX09OjI0eOKC0tLWyN0+lUcnJy0AIAGBxiElx+v19btmxRYWGhEhKCP0ZbsmSJ1qxZE1j/4Q9/qD/96U/64IMPVFNTo2984xtqbGyM+EwNADA4xOTijF27dqmpqUkPPfTQRfuampo0ZMh/8vLjjz/W8uXL5fF4dM0112jGjBnat2+fbr755li0BgCwXEwvzugrPp9PLpeLizMAwFJxcXEGAACxQHABAKxCcAEArEJwAQCsQnABAKxCcAEArEJwAQCsQnABAKxCcAEArEJwAQCsQnABAKwS0zsgA4g/b5+s7e8WLhKtu+hicOCMCwBgFYILAGAVggsAYBWCCwBgFYILAGAVggsAYBWCCwBgFYILAGAVggsAYBWCCwBgFYILAGAVggsAYBWCCwBgFYILAGAVggsAYBWCCwBgFYILAGAVggsAYJWE/m4gmrb93xElJ8VPFkfrduTcah0SzwPggvj5Vx4AgMtAcAEArEJwAQCsQnABAKxCcAEArBJxcO3Zs0cLFiyQ2+2Ww+FQeXl50H5jjNauXau0tDRdddVVys7O1vHjxy953JKSEo0bN06JiYnKzMzUgQMHIm0NADAIRBxcnZ2dysjIUElJScj9P/vZz/Tcc89p8+bNeu+993T11VcrJydHZ8+eDXvMrVu3qqioSOvWrVNNTY0yMjKUk5OjU6dORdoeAGCAizi4cnNz9aMf/UgLFy68aJ8xRs8++6yeeOIJ5eXladq0aXrppZd08uTJi87M/tszzzyj5cuX68EHH9TNN9+szZs36zOf+YxKS0sjbQ8AMMBF9TOuhoYGeTweZWdnB7a5XC5lZmaquro65Jhz587p0KFDQWOGDBmi7OzssGO6urrk8/mCFgDA4BDV4PJ4PJKklJSUoO0pKSmBff/r9OnT6unpiWhMcXGxXC5XYElPT49C9wAAG1h5VeGaNWvk9XoDy4kTJ/q7JQBAH4lqcKWmpkqSWltbg7a3trYG9v2vkSNHaujQoRGNcTqdSk5ODloAAINDVINr/PjxSk1NVWVlZWCbz+fTe++9p6ysrJBjhg8frhkzZgSN8fv9qqysDDsGADB4Rfzt8B0dHaqrqwusNzQ0qLa2Vtdee62uv/56Pfroo/rRj36kG2+8UePHj9eTTz4pt9ut/Pz8wJh58+Zp4cKFWrVqlSSpqKhIhYWF+vznP6+ZM2fq2WefVWdnpx588MErf4QAgAEl4uA6ePCg5s6dG1gvKiqSJBUWFqqsrEzf//731dnZqW9961tqa2vT7NmzVVFRocTExMCY+vp6nT59OrC+aNEiffTRR1q7dq08Ho+mT5+uioqKiy7YAADAYYwx/d3ElfL5fHK5XPr4/yZwP64+wn2Y+h7PAwxk5023qrRdXq/3ktctxM+/8gAAXIYBdQfkhROnKsExrL/bAGKCsxvg3zjjAgBYheACAFiF4AIAWIXgAgBYheACAFiF4AIAWIXgAgBYheACAFiF4AIAWIXgAgBYheACAFiF4AIAWIXgAgBYheACAFiF4AIAWIXgAgBYheACAFiF4AIAWCWhvxvApUXzlu1vn6yN2rEAoD9wxgUAsArBBQCwCsEFALAKwQUAsArBBQCwCsEFALAKwQUAsArBBQCwCsEFALAKwQUAsArBBQCwCsEFALAKwQUAsArBBQCwSsTBtWfPHi1YsEBut1sOh0Pl5eWBfd3d3Vq9erWmTp2qq6++Wm63W0uWLNHJkyd7Peb69evlcDiClsmTJ0f8YAAAA1/EwdXZ2amMjAyVlJRctO+TTz5RTU2NnnzySdXU1Oh3v/udjh07pnvuueeSx50yZYpaWloCy969eyNtDQAwCER8I8nc3Fzl5uaG3OdyubRz586gbRs3btTMmTPV1NSk66+/PnwjCQlKTU2NtB0AwCAT8zsge71eORwOjRgxote648ePy+12KzExUVlZWSouLg4bdF1dXerq6gqs+3y+aLY8oEXzbsoA0B9ienHG2bNntXr1ahUUFCg5OTlsXWZmpsrKylRRUaFNmzapoaFBd9xxh9rb20PWFxcXy+VyBZb09PRYPQQAQJxxGGPMpx7scGjbtm3Kz8+/aF93d7fuvfdeNTc3q6qqqtfg+l9tbW0aO3asnnnmGS1btuyi/aHOuNLT0zVHeUpwDPtUjwUA0H/Om25Vabu8Xu8l8yImbxV2d3fr/vvvV2Njo955552IQkuSRowYoYkTJ6quri7kfqfTKafTGY1WAQCWifpbhRdC6/jx49q1a5c++9nPRnyMjo4O1dfXKy0tLdrtAQAsF3FwdXR0qLa2VrW1tZKkhoYG1dbWqqmpSd3d3fr617+ugwcP6re//a16enrk8Xjk8Xh07ty5wDHmzZunjRs3BtYfe+wx7d69Wx9++KH27dunhQsXaujQoSooKLjyRwgAGFAifqvw4MGDmjt3bmC9qKhIklRYWKj169fr97//vSRp+vTpQePeffddzZkzR5JUX1+v06dPB/Y1NzeroKBAZ86c0ahRozR79mzt379fo0aNirQ9AMAAd0UXZ8QLn88nl8vFxRkAYKlILs7guwoBAFYhuAAAViG4AABWIbgAAFYhuAAAViG4AABWIbgAAFYhuAAAViG4AABWIbgAAFYhuAAAVonJ/bgAAPHt7ZO1/d1CEF+7X9dMvLxazrgAAFYhuAAAViG4AABWIbgAAFYhuAAAViG4AABWIbgAAFYhuAAAViG4AABWIbgAAFYhuAAAViG4AABWIbgAAFYhuAAAViG4AABWIbgAAFYhuAAAVuEOyAA+tWjdRTfHPT0qx0Hfi9bf3XnTLemDy6rljAsAYBWCCwBgFYILAGAVggsAYBWCCwBglYiDa8+ePVqwYIHcbrccDofKy8uD9i9dulQOhyNomT9//iWPW1JSonHjxikxMVGZmZk6cOBApK0BAAaBiIOrs7NTGRkZKikpCVszf/58tbS0BJZXX32112Nu3bpVRUVFWrdunWpqapSRkaGcnBydOnUq0vYAAANcxL/HlZubq9zc3F5rnE6nUlNTL/uYzzzzjJYvX64HH3xQkrR582a99dZbKi0t1eOPPx5piwCAASwmn3FVVVVp9OjRmjRpklasWKEzZ86ErT137pwOHTqk7Ozs/zQ1ZIiys7NVXV0dckxXV5d8Pl/QAgAYHKIeXPPnz9dLL72kyspK/fSnP9Xu3buVm5urnp6ekPWnT59WT0+PUlJSgranpKTI4/GEHFNcXCyXyxVY0tPTo/0wAABxKupf+fTAAw8E/jx16lRNmzZNN9xwg6qqqjRv3ryo/Iw1a9aoqKgosO7z+QgvABgkYn45/IQJEzRy5EjV1dWF3D9y5EgNHTpUra2tQdtbW1vDfk7mdDqVnJwctAAABoeYB1dzc7POnDmjtLS0kPuHDx+uGTNmqLKyMrDN7/ersrJSWVlZsW4PAGCZiIOro6NDtbW1qq2tlSQ1NDSotrZWTU1N6ujo0Pe+9z3t379fH374oSorK5WXl6fPfe5zysnJCRxj3rx52rhxY2C9qKhIv/nNb/Tiiy/qH//4h1asWKHOzs7AVYYAAFwQ8WdcBw8e1Ny5cwPrFz5rKiws1KZNm/S3v/1NL774otra2uR2u3XXXXdpw4YNcjqdgTH19fU6ffp0YH3RokX66KOPtHbtWnk8Hk2fPl0VFRUXXbABAIDDGGP6u4kr5fP55HK5NEd5SnAM6+92gEGD+3HZK97+7s6bblVpu7xe7yWvW+C7CgEAViG4AABWifrvcQFApKL1tpXE246DAWdcAACrEFwAAKsQXAAAqxBcAACrEFwAAKsQXAAAqxBcAACrEFwAAKsQXAAAqxBcAACrEFwAAKsQXAAAqxBcAACrEFwAAKsQXAAAqxBcAACrEFwAAKtwB2R8KtyxFlL0/u6i+XzC5bH5dccZFwDAKgQXAMAqBBcAwCoEFwDAKgQXAMAqBBcAwCoEFwDAKgQXAMAqBBcAwCoEFwDAKgQXAMAqBBcAwCoEFwDAKgQXAMAqEQfXnj17tGDBArndbjkcDpWXlwftdzgcIZenn3467DHXr19/Uf3kyZMjfjAAgIEv4uDq7OxURkaGSkpKQu5vaWkJWkpLS+VwOHTvvff2etwpU6YEjdu7d2+krQEABoGIbySZm5ur3NzcsPtTU1OD1rdv3665c+dqwoQJvTeSkHDRWAAA/ldMP+NqbW3VW2+9pWXLll2y9vjx43K73ZowYYIWL16spqamsLVdXV3y+XxBCwBgcIj4jCsSL774opKSkvS1r32t17rMzEyVlZVp0qRJamlp0VNPPaU77rhDR48eVVJS0kX1xcXFeuqpp2LVdtyJx9ua23zbb0RPPD43MfDF9IyrtLRUixcvVmJiYq91ubm5uu+++zRt2jTl5ORox44damtr0+uvvx6yfs2aNfJ6vYHlxIkTsWgfABCHYnbG9ec//1nHjh3T1q1bIx47YsQITZw4UXV1dSH3O51OOZ3OK20RAGChmJ1xvfDCC5oxY4YyMjIiHtvR0aH6+nqlpaXFoDMAgM0iDq6Ojg7V1taqtrZWktTQ0KDa2tqgiyl8Pp/eeOMNPfzwwyGPMW/ePG3cuDGw/thjj2n37t368MMPtW/fPi1cuFBDhw5VQUFBpO0BAAa4iN8qPHjwoObOnRtYLyoqkiQVFhaqrKxMkvTaa6/JGBM2eOrr63X69OnAenNzswoKCnTmzBmNGjVKs2fP1v79+zVq1KhI2wMADHAOY4zp7yaulM/nk8vl0hzlKcExrL/bibp4vHKLqwoh8dxE9Jw33arSdnm9XiUnJ/day3cVAgCsQnABAKxCcAEArEJwAQCsQnABAKxCcAEArEJwAQCsQnABAKxCcAEArEJwAQCsQnABAKwS0zsgIzr47jXg8kXr+xN53cUvzrgAAFYhuAAAViG4AABWIbgAAFYhuAAAViG4AABWIbgAAFYhuAAAViG4AABWIbgAAFYhuAAAViG4AABWIbgAAFYhuAAAViG4AABWIbgAAFYhuAAAVhkQd0A2xkiSzqtbMv3cDDCI+Nr9/d1CzJw33f3dwqByXv+e7wv/nvfGYS6nKs41NzcrPT29v9sAAFyhEydOaMyYMb3WDIjg8vv9OnnypJKSkuRwOMLW+Xw+paen68SJE0pOTu7DDq8MffctW/uW7O2dvvtWPPZtjFF7e7vcbreGDOn9U6wB8VbhkCFDLpnQ/y05OTlu/rIiQd99y9a+JXt7p+++FW99u1yuy6rj4gwAgFUILgCAVQZVcDmdTq1bt05Op7O/W4kIffctW/uW7O2dvvuWrX1fMCAuzgAADB6D6owLAGA/ggsAYBWCCwBgFYILAGCVARdcJSUlGjdunBITE5WZmakDBw70Wv/GG29o8uTJSkxM1NSpU7Vjx44+6vTfiouLdfvttyspKUmjR49Wfn6+jh071uuYsrIyORyOoCUxMbGPOv639evXX9TD5MmTex3T33MtSePGjbuob4fDoZUrV4as78+53rNnjxYsWCC32y2Hw6Hy8vKg/cYYrV27VmlpabrqqquUnZ2t48ePX/K4kb5Gotl3d3e3Vq9eralTp+rqq6+W2+3WkiVLdPLkyV6P+Wmeb9HsW5KWLl16UQ/z58+/5HH7c74lhXy+OxwOPf3002GP2RfzfSUGVHBt3bpVRUVFWrdunWpqapSRkaGcnBydOnUqZP2+fftUUFCgZcuW6fDhw8rPz1d+fr6OHj3aZz3v3r1bK1eu1P79+7Vz5051d3frrrvuUmdnZ6/jkpOT1dLSElgaGxv7qOP/mDJlSlAPe/fuDVsbD3MtSX/961+Det65c6ck6b777gs7pr/murOzUxkZGSopKQm5/2c/+5mee+45bd68We+9956uvvpq5eTk6OzZs2GPGelrJNp9f/LJJ6qpqdGTTz6pmpoa/e53v9OxY8d0zz33XPK4kTzfot33BfPnzw/q4dVXX+31mP0935KC+m1paVFpaakcDofuvffeXo8b6/m+ImYAmTlzplm5cmVgvaenx7jdblNcXByy/v777zd333130LbMzEzz7W9/O6Z99ubUqVNGktm9e3fYmi1bthiXy9V3TYWwbt06k5GRcdn18TjXxhjzyCOPmBtuuMH4/f6Q++Nhro0xRpLZtm1bYN3v95vU1FTz9NNPB7a1tbUZp9NpXn311bDHifQ1Eu2+Qzlw4ICRZBobG8PWRPp8u1Kh+i4sLDR5eXkRHSce5zsvL898+ctf7rWmr+c7UgPmjOvcuXM6dOiQsrOzA9uGDBmi7OxsVVdXhxxTXV0dVC9JOTk5Yev7gtfrlSRde+21vdZ1dHRo7NixSk9PV15ent5///2+aC/I8ePH5Xa7NWHCBC1evFhNTU1ha+Nxrs+dO6eXX35ZDz30UK9fzhwPc/2/Ghoa5PF4gubU5XIpMzMz7Jx+mtdIX/B6vXI4HBoxYkSvdZE832KlqqpKo0eP1qRJk7RixQqdOXMmbG08zndra6veeustLVu27JK18TDf4QyY4Dp9+rR6enqUkpIStD0lJUUejyfkGI/HE1F9rPn9fj366KP64he/qFtuuSVs3aRJk1RaWqrt27fr5Zdflt/v16xZs9Tc3NxnvWZmZqqsrEwVFRXatGmTGhoadMcdd6i9vT1kfbzNtSSVl5erra1NS5cuDVsTD3MdyoV5i2ROP81rJNbOnj2r1atXq6CgoNcve430+RYL8+fP10svvaTKykr99Kc/1e7du5Wbm6uenp6Q9fE43y+++KKSkpL0ta99rde6eJjv3gyIb4cfKFauXKmjR49e8r3krKwsZWVlBdZnzZqlm266Sb/61a+0YcOGWLcpScrNzQ38edq0acrMzNTYsWP1+uuvX9b/5uLBCy+8oNzcXLnd7rA18TDXA1V3d7fuv/9+GWO0adOmXmvj4fn2wAMPBP48depUTZs2TTfccIOqqqo0b968PunhSpWWlmrx4sWXvMAoHua7NwPmjGvkyJEaOnSoWltbg7a3trYqNTU15JjU1NSI6mNp1apVevPNN/Xuu+9GdIsWSRo2bJhuvfVW1dXVxai7SxsxYoQmTpwYtod4mmtJamxs1K5du/Twww9HNC4e5lpSYN4imdNP8xqJlQuh1djYqJ07d0Z8a41LPd/6woQJEzRy5MiwPcTTfEvSn//8Zx07dizi57wUH/P93wZMcA0fPlwzZsxQZWVlYJvf71dlZWXQ/5j/W1ZWVlC9JO3cuTNsfSwYY7Rq1Spt27ZN77zzjsaPHx/xMXp6enTkyBGlpaXFoMPL09HRofr6+rA9xMNc/7ctW7Zo9OjRuvvuuyMaFw9zLUnjx49Xampq0Jz6fD699957Yef007xGYuFCaB0/fly7du3SZz/72YiPcannW19obm7WmTNnwvYQL/N9wQsvvKAZM2YoIyMj4rHxMN9B+vvqkGh67bXXjNPpNGVlZebvf/+7+da3vmVGjBhhPB6PMcaYb37zm+bxxx8P1P/lL38xCQkJ5uc//7n5xz/+YdatW2eGDRtmjhw50mc9r1ixwrhcLlNVVWVaWloCyyeffBKo+d++n3rqKfP222+b+vp6c+jQIfPAAw+YxMRE8/777/dZ39/97ndNVVWVaWhoMH/5y19Mdna2GTlypDl16lTInuNhri/o6ekx119/vVm9evVF++Jprtvb283hw4fN4cOHjSTzzDPPmMOHDweuvvvJT35iRowYYbZv327+9re/mby8PDN+/Hjzr3/9K3CML3/5y+b5558PrF/qNRLrvs+dO2fuueceM2bMGFNbWxv0nO/q6grb96Web7Huu7293Tz22GOmurraNDQ0mF27dpnbbrvN3Hjjjebs2bNh++7v+b7A6/Waz3zmM2bTpk0hj9Ef830lBlRwGWPM888/b66//nozfPhwM3PmTLN///7AvjvvvNMUFhYG1b/++utm4sSJZvjw4WbKlCnmrbfe6tN+JYVctmzZErbvRx99NPAYU1JSzFe/+lVTU1PTp30vWrTIpKWlmeHDh5vrrrvOLFq0yNTV1YXt2Zj+n+sL3n77bSPJHDt27KJ98TTX7777bsjnxoX+/H6/efLJJ01KSopxOp1m3rx5Fz2msWPHmnXr1gVt6+01Euu+Gxoawj7n33333bB9X+r5Fuu+P/nkE3PXXXeZUaNGmWHDhpmxY8ea5cuXXxRA8TbfF/zqV78yV111lWlrawt5jP6Y7yvBbU0AAFYZMJ9xAQAGB4ILAGAVggsAYBWCCwBgFYILAGAVggsAYBWCCwBgFYILAGAVggsAYBWCCwBgFYILAGAVggsAYJX/B0Yhn3kYpoJRAAAAAElFTkSuQmCC\n"
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Execution time for 100 steps: 21.3849 seconds\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 640x480 with 0 Axes>"
+            ]
+          },
+          "metadata": {}
+        }
+      ],
+      "source": [
+        "import numpy as np\n",
+        "import matplotlib.pyplot as plt\n",
+        "import timeit\n",
+        "\n",
+        "class SIR_CA:\n",
+        "    def __init__(self, size, initial_infected, transmission_rate, recovery_rate):\n",
+        "        self.size = size\n",
+        "        self.transmission_rate = transmission_rate\n",
+        "        self.recovery_rate = recovery_rate\n",
+        "\n",
+        "        self.grid = np.zeros((size, size), dtype=int)\n",
+        "        self.initialize_grid(initial_infected)\n",
+        "\n",
+        "    def initialize_grid(self, initial_infected):\n",
+        "        for _ in range(initial_infected):\n",
+        "            x, y = np.random.randint(0, self.size, 2)\n",
+        "            self.grid[x, y] = 1\n",
+        "\n",
+        "    def simulate_step(self):\n",
+        "        new_grid = np.zeros((self.size, self.size), dtype=int)\n",
+        "        for i in range(self.size):\n",
+        "            for j in range(self.size):\n",
+        "                if self.grid[i, j] == 0:\n",
+        "                    if self.calculate_nearby_infected(i, j) > 0:\n",
+        "                        if np.random.random() < self.transmission_rate:\n",
+        "                            new_grid[i, j] = 1\n",
+        "                elif self.grid[i, j] == 1:\n",
+        "                    if np.random.random() < self.recovery_rate:\n",
+        "                        new_grid[i, j] = 2\n",
+        "                    else:\n",
+        "                        new_grid[i, j] = 1\n",
+        "                elif self.grid[i, j] == 2:\n",
+        "                    new_grid[i, j] = 2\n",
+        "        self.grid = new_grid\n",
+        "\n",
+        "    def calculate_nearby_infected(self, i, j):\n",
+        "        infected_count = 0\n",
+        "        for di in [-1, 0, 1]:\n",
+        "            for dj in [-1, 0, 1]:\n",
+        "                ni, nj = i + di, j + dj\n",
+        "                if 0 <= ni < self.size and 0 <= nj < self.size:\n",
+        "                    if self.grid[ni, nj] == 1:\n",
+        "                        infected_count += 1\n",
+        "        return infected_count\n",
+        "\n",
+        "    def animate_simulation(self, steps):\n",
+        "        fig, ax = plt.subplots()\n",
+        "        img = ax.imshow(self.grid, cmap='viridis')\n",
+        "\n",
+        "        for _ in range(steps):\n",
+        "            self.simulate_step()\n",
+        "            img.set_array(self.grid)\n",
+        "            plt.pause(0.2)\n",
+        "            plt.draw()\n",
+        "# use AI to enter timeit function\n",
+        "def time_simulation(size, initial_infected, transmission_rate, recovery_rate, steps):\n",
+        "    sir_model = SIR_CA(size, initial_infected, transmission_rate, recovery_rate)\n",
+        "    return timeit.timeit(lambda: sir_model.animate_simulation(steps), number=1)\n",
+        "\n",
+        "size = 20\n",
+        "initial_infected = 10\n",
+        "transmission_rate = 0.3\n",
+        "recovery_rate = 0.1\n",
+        "steps = 100\n",
+        "\n",
+        "execution_time = time_simulation(size, initial_infected, transmission_rate, recovery_rate, steps)\n",
+        "print(f\"Execution time for {steps} steps: {execution_time:.4f} seconds\")\n",
+        "\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "1.\n",
+        "The algorithm's time complexity is linear, meaning the time taken increases proportionally with grid size and number of generations. Running larger or longer experiments will take more time due to this linear relationship.\n",
+        "\n",
+        "3.While the efficiency improvements do not change the Big-O time complexity, they significantly reduce the constant overhead, resulting in faster execution times for the same input. This makes the algorithm more efficient, especially for large Life grids."
+      ],
+      "metadata": {
+        "id": "HzsgUBY4Rork"
+      }
+    }
+  ]
+}
